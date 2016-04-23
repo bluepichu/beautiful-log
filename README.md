@@ -52,11 +52,11 @@ log.divider("DIVIDE");
 // Prints a divider that looks like "###### DIVIDE ######", expanding to fill the full console width
 // You can also pass a different divider character: log.divider("DIVIDE", "-");
 
-logger.indent();
-logger.log("This text is indented one level.");
-logger.log("All text will be indented until the unindent is called.")
-logger.indent();
-logger.log("Multiple indentation levels work.");
-logger.unindent(2);
-logger.log("You can also pass a parameter to indent/unindent multiple times in one call.");
+log.indent();
+log.log("This text is indented one level.");
+log.log("All text will be indented until the unindent is called.")
+log.indent();
+log.log("Multiple indentation levels work.");
+log.unindent(2);
+log.log("You can also pass a parameter to indent/unindent multiple times in one call.");
 ```
