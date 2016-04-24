@@ -1,6 +1,6 @@
 {
   "name": "beautiful-log",
-  "version": "1.0.2",
+  "version": "1.1.0",
   "description": "Because logging should be beautiful.",
   "main": "index.js",
   "scripts": {
@@ -9,7 +9,7 @@
   "author": "Matthew Savage (bluepichu) <bluepichu@bluepichu.com>",
   "license": "ISC",
   "dependencies": {
-    "ansi-styles": "^2.2.1",
+    "ansy": "^1.0.1",
     "callsite": "^1.0.0",
     "couleurs": "^6.0.1",
     "moment": "^2.13.0",
