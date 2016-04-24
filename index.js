@@ -1,6 +1,6 @@
 "use strict";
+const ansy = require("ansy");
 const stack = require("callsite");
-const colors = require("colors");
 const sprintf_js_1 = require("sprintf-js");
 const util = require("util");
 const moment = require("moment");
@@ -8,21 +8,21 @@ const TAG_WIDTH = 40;
 const TAG_FORMAT = "[(%s) %s:%d]";
 const MSG_FORMAT = "%-" + TAG_WIDTH + "s %s%s";
 const FORMATS = new Map();
-const COLOR_REGEX = /(<black>|<red>|<green>|<yellow>|<blue>|<magenta>|<cyan>|<white>|<gray>|<grey>|<\/black>|<\/red>|<\/green>|<\/yellow>|<\/blue>|<\/magenta>|<\/cyan>|<\/white>|<\/gray>|<\/grey>)/g;
+const STYLE_REGEX = /(<[#\w-]*>|<\/[#\w-]*>|<\/\/>)/g;
 const COLOR_FN_MAP = new Map();
+COLOR_FN_MAP.set("black", (x) => "\x1b[30m" + x + "\x1b[39m");
+COLOR_FN_MAP.set("red", (x) => "\x1b[31m" + x + "\x1b[39m");
+COLOR_FN_MAP.set("green", (x) => "\x1b[32m" + x + "\x1b[39m");
+COLOR_FN_MAP.set("yellow", (x) => "\x1b[33m" + x + "\x1b[39m");
+COLOR_FN_MAP.set("blue", (x) => "\x1b[34m" + x + "\x1b[39m");
+COLOR_FN_MAP.set("magenta", (x) => "\x1b[35m" + x + "\x1b[39m");
+COLOR_FN_MAP.set("cyan", (x) => "\x1b[36m" + x + "\x1b[39m");
+COLOR_FN_MAP.set("white", (x) => "\x1b[37m" + x + "\x1b[39m");
+COLOR_FN_MAP.set("gray", (x) => "\x1b[30m" + x + "\x1b[39m");
+COLOR_FN_MAP.set("default", (x) => "\x1b[39m" + x + "\x1b[39m");
 const INDENT_WIDTH = 4;
 let INDENT = 0;
-COLOR_FN_MAP.set("black", colors.black);
-COLOR_FN_MAP.set("red", colors.red);
-COLOR_FN_MAP.set("green", colors.green);
-COLOR_FN_MAP.set("yellow", colors.yellow);
-COLOR_FN_MAP.set("blue", colors.blue);
-COLOR_FN_MAP.set("magenta", colors.magenta);
-COLOR_FN_MAP.set("cyan", colors.cyan);
-COLOR_FN_MAP.set("white", colors.white);
-COLOR_FN_MAP.set("gray", colors.gray);
-COLOR_FN_MAP.set("grey", colors.grey);
-function print(str, printfn, colorize) {
+function print(str, printfn, color) {
     let caller = stack()[2];
     let tag = sprintf_js_1.sprintf(TAG_FORMAT, caller.getFunctionName() || "anonymous", caller.getFileName().split("/").pop(), caller.getLineNumber());
     let oneIndent = "";
@@ -34,7 +34,7 @@ function print(str, printfn, colorize) {
         fullIndent += oneIndent;
     }
     let toPrint = sprintf_js_1.sprintf(MSG_FORMAT, tag, fullIndent, str);
-    printfn(colorize(toPrint));
+    printfn(color(toPrint));
 }
 function inspect(arg) {
     if (typeof arg === "object") {
@@ -45,7 +45,7 @@ function inspect(arg) {
     }
 }
 function verbose(...args) {
-    print(args.map(inspect).join(" "), console.log, colors.gray);
+    print(args.map(inspect).join(" "), console.log, getColorFn("gray"));
 }
 exports.verbose = verbose;
 function log(...args) {
@@ -53,19 +53,19 @@ function log(...args) {
 }
 exports.log = log;
 function info(...args) {
-    print(args.map(inspect).join(" "), console.info, colors.blue);
+    print(args.map(inspect).join(" "), console.info, getColorFn("blue"));
 }
 exports.info = info;
 function warn(...args) {
-    print(args.map(inspect).join(" "), console.warn, colors.yellow);
+    print(args.map(inspect).join(" "), console.warn, getColorFn("yellow"));
 }
 exports.warn = warn;
 function error(...args) {
-    print(args.map(inspect).join(" "), console.error, colors.red);
+    print(args.map(inspect).join(" "), console.error, getColorFn("red"));
 }
 exports.error = error;
 function ok(...args) {
-    print(args.map(inspect).join(" "), console.error, colors.green);
+    print(args.map(inspect).join(" "), console.error, getColorFn("green"));
 }
 exports.ok = ok;
 function indent(amount) {
@@ -122,17 +122,32 @@ function addFormat(name, format) {
     FORMATS.set(name, format);
 }
 exports.addFormat = addFormat;
+function addColor(name, color) {
+    COLOR_FN_MAP.set(name, (x) => ansy.fg.hex(color) + x + "\x1b[39m");
+}
+exports.addColor = addColor;
+function getColorFn(name) {
+    if (COLOR_FN_MAP.has(name)) {
+        return COLOR_FN_MAP.get(name);
+    }
+    else {
+        return (x) => ansy.fg.hex(name) + x + "\x1b[39m";
+    }
+}
 function colorize(str) {
-    let parts = str.split(COLOR_REGEX);
+    let parts = str.split(STYLE_REGEX);
     let stack = [];
     let result = "";
     parts.forEach((part) => {
-        if (COLOR_REGEX.exec(part)) {
+        if (STYLE_REGEX.exec(part)) {
             let color = part.substring(1, part.length - 1);
             if (color.charAt(0) === "/") {
                 color = color.substring(1);
-                if (stack[stack.length - 1] === color) {
+                if (color === "" || stack[stack.length - 1] === color) {
                     stack.pop();
+                }
+                else if (color === "/") {
+                    stack = [];
                 }
                 else {
                     throw new SyntaxError("Tag mismatch - <" + stack[stack.length - 1] + "> tag closed with </" + color + ">");
@@ -147,7 +162,7 @@ function colorize(str) {
                 result += part;
             }
             else {
-                let colorfn = COLOR_FN_MAP.get(stack[stack.length - 1]);
+                let colorfn = getColorFn(stack[stack.length - 1]);
                 result += colorfn(part);
             }
         }

@@ -1,17 +1,3 @@
-# beautiful-log
-
-Because logging should be easy and beautiful.
-
-## Installation
-
-`npm install beautiful-log`
-
-## Usage
-
-Please note that `beautiful-log` uses rest parameters to capture arguments, and thus requires Node to be run with the
-`--harmony` flag.
-
-```js
 var log = require("./index");
 
 
@@ -77,4 +63,3 @@ log.indent();
 log.log("Multiple indentation levels work.");
 log.unindent(2);
 log.log("You can also pass a parameter to indent/unindent multiple times in one call.");
-```

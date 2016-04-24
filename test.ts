@@ -50,6 +50,11 @@ try {
 	log.divider("TESTING COLOR TAGS");
 
 	log.log("<gray><blue>beautiful-log</blue> can be used to higlight important <magenta>keywords</magenta> that may be relevant to <red>errors</red>.</gray>");
+	log.log("<#0044ff>What a lovely blue</#0044ff>");
+	log.log("<#ff8700>The color of autumn</#ff8700>");
+	log.log("<blue>GOTTA CLOSE FAST</>");
+	log.log("<blue>GOTTA CLOSE <yellow>FASTER <red>FASTER <green>FASTER FASTER FASTER<//>");
+
 
 
 	log.divider("TESTING HOOKS");
@@ -61,6 +66,7 @@ try {
 	log.logf("magenta", "magenta");
 
 
+
 	log.divider("TESTING FUNCTION NAME");
 
 	function fnNameTest() {
@@ -68,6 +74,14 @@ try {
 	}
 
 	fnNameTest();
+
+
+
+	log.divider("TESTING CUSTOM COLOR NAMES");
+
+	log.addColor("purple-af", "#af00af");
+	log.log("<purple-af>this color is purple af</purple-af>");
+
 
 
 	log.divider("TESTING INDENTS");
@@ -82,9 +96,11 @@ try {
 	log.log("Indent = 0");
 
 
+
 	log.divider("TESTING TIMESTAMP");
 
 	log.timestamp();
+
 
 
 	log.divider("ALTERNATE DIVIDER CHARACTER", "-");
@@ -92,6 +108,7 @@ try {
 	log.error("FAILED - LogError thrown.");
 	log.error(e);
 }
+
 
 log.divider("TESTING ERROR CONDITIONS");
 log.info("All of the following should print a test number and description, a green OK, and a description of what error was raised.");
@@ -127,5 +144,6 @@ try {
 	log.ok("OK");
 	log.verbose(e);
 }
+
 
 log.divider("TESTING IS COMPLETE", "~");
