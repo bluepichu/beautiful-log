@@ -11,3 +11,4 @@ export declare function timestamp(): void;
 export declare function logf(format: string, ...args: any[]): void;
 export declare function line(): void;
 export declare function addFormat(name: string, format: string): void;
+export declare function addColor(name: string, color: string): void;

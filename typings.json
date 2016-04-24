@@ -4,7 +4,6 @@
 	"dependencies": {},
 	"ambientDependencies": {
 		"callsite": "registry:dt/callsite#1.0.0+20160316171810",
-		"colors": "registry:dt/colors#0.6.0-1+20160317120654",
 		"moment": "registry:dt/moment#2.8.0+20160316155526",
 		"moment-node": "registry:dt/moment-node#2.11.1+20160417135035",
 		"node": "registry:dt/node#4.0.0+20160412142033",

@@ -41,6 +41,10 @@ try {
     log.log(data);
     log.divider("TESTING COLOR TAGS");
     log.log("<gray><blue>beautiful-log</blue> can be used to higlight important <magenta>keywords</magenta> that may be relevant to <red>errors</red>.</gray>");
+    log.log("<#0044ff>What a lovely blue</#0044ff>");
+    log.log("<#ff8700>The color of autumn</#ff8700>");
+    log.log("<blue>GOTTA CLOSE FAST</>");
+    log.log("<blue>GOTTA CLOSE <yellow>FASTER <red>FASTER <green>FASTER FASTER FASTER<//>");
     log.divider("TESTING HOOKS");
     log.addFormat("numbers", "%10d %10d");
     log.logf("numbers", 1234567890, 987654);
@@ -51,6 +55,9 @@ try {
         log.log("This log came from a function called 'fnNameTest'.");
     }
     fnNameTest();
+    log.divider("TESTING CUSTOM COLOR NAMES");
+    log.addColor("purple-af", "#af00af");
+    log.log("<purple-af>this color is purple af</purple-af>");
     log.divider("TESTING INDENTS");
     log.indent();
     log.log("Indent = 1");
