@@ -12,7 +12,7 @@ Please note that `beautiful-log` uses rest parameters to capture arguments, and 
 `--harmony` flag.
 
 ```js
-var log = require("./index");
+var log = require("beautiful-log");
 
 
 
