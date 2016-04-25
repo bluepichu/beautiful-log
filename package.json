@@ -1,6 +1,6 @@
 {
   "name": "beautiful-log",
-  "version": "1.1.0",
+  "version": "1.1.1",
   "description": "Because logging should be beautiful.",
   "main": "index.js",
   "scripts": {
@@ -11,7 +11,6 @@
   "dependencies": {
     "ansy": "^1.0.1",
     "callsite": "^1.0.0",
-    "couleurs": "^6.0.1",
     "moment": "^2.13.0",
     "sprintf-js": "^1.0.3"
   },
