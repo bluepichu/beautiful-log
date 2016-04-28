@@ -8,8 +8,8 @@ Because logging should be easy and beautiful.
 
 ## Usage
 
-Please note that `beautiful-log` uses rest parameters to capture arguments, and thus requires Node to be run with the
-`--harmony` flag.
+`beautiful-log` requires rest arguments in order to run properly.  This means that you must either use Node 6.x (in
+which rest arguments are enabled by defualt) or run with the `--harmony` flag.
 
 ```js
 var log = require("beautiful-log");
