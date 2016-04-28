@@ -34,7 +34,7 @@ log.log("<#af00af>This color is purple af</#af00af>");
 log.addColor("veljean", "#024601");
 // You can also name your own colors...
 
-log.log("<veljean>Your time is up and you're parole's begun</veljean>")
+log.log("<veljean>Your time is up and your parole's begun</veljean>")
 // ...and use them just like the prenamed ones.
 
 log.addColor("gray", "#333333");
