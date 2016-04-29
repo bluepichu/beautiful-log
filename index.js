@@ -114,8 +114,13 @@ function logf(format, ...args) {
     }
 }
 exports.logf = logf;
-function line() {
-    console.log();
+function line(count) {
+    if (count === undefined) {
+        count = 1;
+    }
+    for (let i = 0; i < count; i++) {
+        console.log();
+    }
 }
 exports.line = line;
 function addFormat(name, format) {

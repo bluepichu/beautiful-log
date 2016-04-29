@@ -134,8 +134,14 @@ export function logf(format: string, ...args: any[]): void {
 	}
 }
 
-export function line(): void {
-	console.log();
+export function line(count?: number): void {
+	if (count === undefined) {
+		count = 1;
+	}
+
+	for (let i = 0; i < count; i++) {
+		console.log();
+	}
 }
 
 export function addFormat(name: string, format: string): void {

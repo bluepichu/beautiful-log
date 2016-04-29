@@ -78,7 +78,7 @@ catch (e) {
 log.divider("TESTING ERROR CONDITIONS");
 log.info("All of the following should print a test number and description, a green OK, and a description of what error was raised.");
 log.info("Nothing else should be printed.");
-log.line();
+log.line(3);
 log.log("Test 1. Invalid format string");
 try {
     log.addFormat("int", "%d");

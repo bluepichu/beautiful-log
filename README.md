@@ -70,6 +70,12 @@ log.divider("-D-I-V-I-D-E-", "-");
 log.timestamp();
 // Prints the current time.
 
+log.line();
+// Prints an empty line.
+
+log.line(2);
+// Prints many empty lines.
+
 log.indent();
 log.log("This text is indented one level.");
 log.log("All text will be indented until the unindent is called.")
