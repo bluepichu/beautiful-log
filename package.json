@@ -1,6 +1,6 @@
 {
   "name": "beautiful-log",
-  "version": "1.2.0",
+  "version": "1.2.1",
   "description": "Because logging should be beautiful.",
   "main": "index.js",
   "scripts": {

@@ -39,6 +39,7 @@ try {
     log.verbose("verbose (gray)");
     log.ok("ok (green)");
     log.log(data);
+    log.log(undefined, null, [], "", false);
     log.divider("TESTING COLOR TAGS");
     log.log("<gray><blue>beautiful-log</blue> can be used to higlight important <magenta>keywords</magenta> that may be relevant to <red>errors</red>.</gray>");
     log.log("<#0044ff>What a lovely blue</#0044ff>");

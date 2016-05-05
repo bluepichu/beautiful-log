@@ -20,6 +20,7 @@ COLOR_FN_MAP.set("cyan", (x) => "\x1b[36m" + x + "\x1b[39m");
 COLOR_FN_MAP.set("white", (x) => "\x1b[37m" + x + "\x1b[39m");
 COLOR_FN_MAP.set("gray", (x) => "\x1b[30m" + x + "\x1b[39m");
 COLOR_FN_MAP.set("default", (x) => "\x1b[39m" + x + "\x1b[39m");
+COLOR_FN_MAP.set("blink", (x) => "\x1b[5m" + x + "\x1b[0m");
 const INDENT_WIDTH = 4;
 let INDENT = 0;
 function print(str, printfn, color) {
@@ -40,8 +41,11 @@ function inspect(arg) {
     if (typeof arg === "object") {
         return util.inspect(arg, { colors: true });
     }
+    else if (arg === undefined) {
+        return "undefined";
+    }
     else {
-        return arg.toString();
+        return arg;
     }
 }
 function verbose(...args) {

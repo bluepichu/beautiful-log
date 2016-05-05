@@ -46,6 +46,8 @@ try {
 
 	log.log(data);
 
+	log.log(undefined, null, [], "", false);
+
 
 	log.divider("TESTING COLOR TAGS");
 

@@ -24,6 +24,8 @@ COLOR_FN_MAP.set("white",   (x) => "\x1b[37m" + x + "\x1b[39m");
 COLOR_FN_MAP.set("gray",    (x) => "\x1b[30m" + x + "\x1b[39m");
 COLOR_FN_MAP.set("default", (x) => "\x1b[39m" + x + "\x1b[39m");
 
+COLOR_FN_MAP.set("blink", (x) => "\x1b[5m" + x + "\x1b[0m");
+
 const INDENT_WIDTH: number = 4;
 let INDENT: number = 0;
 
@@ -54,8 +56,10 @@ function print(str: string, printfn: (s: string) => void, color: (s: string) => 
 function inspect(arg: any): string {
 	if (typeof arg === "object") {
 		return util.inspect(arg, { colors: true });
+	} else if (arg === undefined) {
+		return "undefined";
 	} else {
-		return arg.toString();
+		return arg;
 	}
 }
 
