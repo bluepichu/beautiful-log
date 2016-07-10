@@ -13,6 +13,15 @@ const FORMATS: Map<string, string> = new Map();
 const STYLE_REGEX = /(<[#\w-]*>|<\/[#\w-]*>|<\/\/>)/g;
 const COLOR_FN_MAP: Map<string, (str: string) => string> = new Map();
 
+const stdout = console.log;
+const stderr = console.error;
+
+let tagPlaceholder: string = "";
+
+for (let i = 0; i < TAG_WIDTH; i++) {
+	tagPlaceholder += " ";
+}
+
 COLOR_FN_MAP.set("black",   (x) => "\x1b[30m" + x + "\x1b[39m");
 COLOR_FN_MAP.set("red",     (x) => "\x1b[31m" + x + "\x1b[39m");
 COLOR_FN_MAP.set("green",   (x) => "\x1b[32m" + x + "\x1b[39m");
@@ -27,7 +36,14 @@ COLOR_FN_MAP.set("default", (x) => "\x1b[39m" + x + "\x1b[39m");
 COLOR_FN_MAP.set("blink", (x) => "\x1b[5m" + x + "\x1b[0m");
 
 const INDENT_WIDTH: number = 4;
-let INDENT: number = 0;
+
+let oneIndent: string = "";
+
+for (let i = 0; i < INDENT_WIDTH; i++) {
+	oneIndent += " ";
+}
+
+let fullIndent: string = "";
 
 function print(str: string, printfn: (s: string) => void, color: (s: string) => string): void {
 	let caller = stack()[2];
@@ -36,17 +52,7 @@ function print(str: string, printfn: (s: string) => void, color: (s: string) => 
 		caller.getFileName().split("/").pop(),
 		caller.getLineNumber());
 
-	let oneIndent: string = "";
-
-	for (let i = 0; i < INDENT_WIDTH; i++) {
-		oneIndent += " ";
-	}
-
-	let fullIndent: string = "";
-
-	for (let i = 0; i < INDENT; i++) {
-		fullIndent += oneIndent;
-	}
+	str = str.replace(/\n/g, "\n" + tagPlaceholder + fullIndent);
 
 	let toPrint: string = sprintf(MSG_FORMAT, tag, fullIndent, str);
 
@@ -64,27 +70,27 @@ function inspect(arg: any): string {
 }
 
 export function verbose(...args: any[]): void {
-	print(args.map(inspect).join(" "), console.log, getColorFn("gray"));
+	print(args.map(inspect).join(" "), stdout, getColorFn("gray"));
 }
 
 export function log(...args: any[]): void {
-	print(args.map(inspect).join(" "), console.log, colorize);
+	print(args.map(inspect).join(" "), stdout, colorize);
 }
 
 export function info(...args: any[]): void {
-	print(args.map(inspect).join(" "), console.info, getColorFn("blue"));
+	print(args.map(inspect).join(" "), stdout, getColorFn("blue"));
 }
 
 export function warn(...args: any[]): void {
-	print(args.map(inspect).join(" "), console.warn, getColorFn("yellow"));
+	print(args.map(inspect).join(" "), stdout, getColorFn("yellow"));
 }
 
 export function error(...args: any[]): void {
-	print(args.map(inspect).join(" "), console.error, getColorFn("red"));
+	print(args.map(inspect).join(" "), stderr, getColorFn("red"));
 }
 
 export function ok(...args: any[]): void {
-	print(args.map(inspect).join(" "), console.error, getColorFn("green"));
+	print(args.map(inspect).join(" "), stdout, getColorFn("green"));
 }
 
 export function indent(amount?: number) {
@@ -92,7 +98,9 @@ export function indent(amount?: number) {
 		amount = 1;
 	}
 
-	INDENT += amount;
+	for (let i = 0; i < amount; i++) {
+		fullIndent += oneIndent;
+	}
 }
 
 export function unindent(amount?: number) {
@@ -100,7 +108,9 @@ export function unindent(amount?: number) {
 		amount = 1;
 	}
 
-	INDENT -= amount;
+	let rem = INDENT_WIDTH * amount;
+
+	fullIndent = fullIndent.substring(rem);
 }
 
 export function divider(text: string, divider?: string): void {
@@ -120,21 +130,20 @@ export function divider(text: string, divider?: string): void {
 		text = text + divider;
 	}
 
-	line();
-	line();
-	console.log(text);
+	line(2);
+	stdout(text);
 	line();
 }
 
 export function timestamp(): void {
-	print(moment().format("YYYY-MM-DD HH:mm:ss"), console.log, colorize);
+	print(moment().format("YYYY-MM-DD HH:mm:ss"), stdout, colorize);
 }
 
 export function logf(format: string, ...args: any[]): void {
 	if (FORMATS.has(format)) {
-		print(sprintf(FORMATS.get(format), ...args), console.log, colorize);
+		print(sprintf(FORMATS.get(format), ...args), stdout, colorize);
 	} else {
-		print(sprintf(format, ...args), console.log, colorize);
+		print(sprintf(format, ...args), stdout, colorize);
 	}
 }
 
@@ -144,7 +153,7 @@ export function line(count?: number): void {
 	}
 
 	for (let i = 0; i < count; i++) {
-		console.log();
+		stdout("\n");
 	}
 }
 

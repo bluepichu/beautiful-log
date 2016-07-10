@@ -10,6 +10,12 @@ const MSG_FORMAT = "%-" + TAG_WIDTH + "s %s%s";
 const FORMATS = new Map();
 const STYLE_REGEX = /(<[#\w-]*>|<\/[#\w-]*>|<\/\/>)/g;
 const COLOR_FN_MAP = new Map();
+const stdout = console.log;
+const stderr = console.error;
+let tagPlaceholder = "";
+for (let i = 0; i < TAG_WIDTH; i++) {
+    tagPlaceholder += " ";
+}
 COLOR_FN_MAP.set("black", (x) => "\x1b[30m" + x + "\x1b[39m");
 COLOR_FN_MAP.set("red", (x) => "\x1b[31m" + x + "\x1b[39m");
 COLOR_FN_MAP.set("green", (x) => "\x1b[32m" + x + "\x1b[39m");
@@ -22,18 +28,15 @@ COLOR_FN_MAP.set("gray", (x) => "\x1b[30m" + x + "\x1b[39m");
 COLOR_FN_MAP.set("default", (x) => "\x1b[39m" + x + "\x1b[39m");
 COLOR_FN_MAP.set("blink", (x) => "\x1b[5m" + x + "\x1b[0m");
 const INDENT_WIDTH = 4;
-let INDENT = 0;
+let oneIndent = "";
+for (let i = 0; i < INDENT_WIDTH; i++) {
+    oneIndent += " ";
+}
+let fullIndent = "";
 function print(str, printfn, color) {
     let caller = stack()[2];
     let tag = sprintf_js_1.sprintf(TAG_FORMAT, caller.getFunctionName() || "anonymous", caller.getFileName().split("/").pop(), caller.getLineNumber());
-    let oneIndent = "";
-    for (let i = 0; i < INDENT_WIDTH; i++) {
-        oneIndent += " ";
-    }
-    let fullIndent = "";
-    for (let i = 0; i < INDENT; i++) {
-        fullIndent += oneIndent;
-    }
+    str = str.replace(/\n/g, "\n" + tagPlaceholder + fullIndent);
     let toPrint = sprintf_js_1.sprintf(MSG_FORMAT, tag, fullIndent, str);
     printfn(color(toPrint));
 }
@@ -49,41 +52,44 @@ function inspect(arg) {
     }
 }
 function verbose(...args) {
-    print(args.map(inspect).join(" "), console.log, getColorFn("gray"));
+    print(args.map(inspect).join(" "), stdout, getColorFn("gray"));
 }
 exports.verbose = verbose;
 function log(...args) {
-    print(args.map(inspect).join(" "), console.log, colorize);
+    print(args.map(inspect).join(" "), stdout, colorize);
 }
 exports.log = log;
 function info(...args) {
-    print(args.map(inspect).join(" "), console.info, getColorFn("blue"));
+    print(args.map(inspect).join(" "), stdout, getColorFn("blue"));
 }
 exports.info = info;
 function warn(...args) {
-    print(args.map(inspect).join(" "), console.warn, getColorFn("yellow"));
+    print(args.map(inspect).join(" "), stdout, getColorFn("yellow"));
 }
 exports.warn = warn;
 function error(...args) {
-    print(args.map(inspect).join(" "), console.error, getColorFn("red"));
+    print(args.map(inspect).join(" "), stderr, getColorFn("red"));
 }
 exports.error = error;
 function ok(...args) {
-    print(args.map(inspect).join(" "), console.error, getColorFn("green"));
+    print(args.map(inspect).join(" "), stdout, getColorFn("green"));
 }
 exports.ok = ok;
 function indent(amount) {
     if (amount === undefined) {
         amount = 1;
     }
-    INDENT += amount;
+    for (let i = 0; i < amount; i++) {
+        fullIndent += oneIndent;
+    }
 }
 exports.indent = indent;
 function unindent(amount) {
     if (amount === undefined) {
         amount = 1;
     }
-    INDENT -= amount;
+    let rem = INDENT_WIDTH * amount;
+    fullIndent = fullIndent.substring(rem);
 }
 exports.unindent = unindent;
 function divider(text, divider) {
@@ -99,22 +105,21 @@ function divider(text, divider) {
     while (text.length + divider.length <= len) {
         text = text + divider;
     }
-    line();
-    line();
-    console.log(text);
+    line(2);
+    stdout(text);
     line();
 }
 exports.divider = divider;
 function timestamp() {
-    print(moment().format("YYYY-MM-DD HH:mm:ss"), console.log, colorize);
+    print(moment().format("YYYY-MM-DD HH:mm:ss"), stdout, colorize);
 }
 exports.timestamp = timestamp;
 function logf(format, ...args) {
     if (FORMATS.has(format)) {
-        print(sprintf_js_1.sprintf(FORMATS.get(format), ...args), console.log, colorize);
+        print(sprintf_js_1.sprintf(FORMATS.get(format), ...args), stdout, colorize);
     }
     else {
-        print(sprintf_js_1.sprintf(format, ...args), console.log, colorize);
+        print(sprintf_js_1.sprintf(format, ...args), stdout, colorize);
     }
 }
 exports.logf = logf;
@@ -123,7 +128,7 @@ function line(count) {
         count = 1;
     }
     for (let i = 0; i < count; i++) {
-        console.log();
+        stdout("\n");
     }
 }
 exports.line = line;
