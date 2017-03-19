@@ -14,12 +14,16 @@
     "moment": "^2.13.0",
     "sprintf-js": "^1.0.3"
   },
-  "typings": "index.d.ts",
+  "typings": "dist/beautiful-log.d.ts",
   "bugs": {
     "url": "https://github.com/bluepichu/beautiful-log/issues"
   },
   "repository": {
     "type": "git",
     "url": "https://github.com/bluepichu/beautiful-log.git"
+  },
+  "devDependencies": {
+    "@types/callsite": "^1.0.30",
+    "@types/node": "^7.0.5"
   }
 }

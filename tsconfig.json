@@ -1,18 +1,20 @@
 {
 	"compilerOptions": {
+		"outDir": "dist",
 		"emitDecoratorMetadata": true,
 		"experimentalDecorators": true,
 		"target": "es6",
 		"module": "commonjs",
 		"moduleResolution": "node",
-		"noLib": true,
 		"removeComments": true,
-		"noImplicitAny": true
+		"noImplicitAny": true,
+		"declaration": true
 	},
 	"exclude": [
 		"node_modules",
 		"typings/main",
-		"typings/main.d.ts"
+		"typings/main.d.ts",
+		"dist"
 	],
 	"compileOnSave": false
 }
