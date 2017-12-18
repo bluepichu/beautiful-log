@@ -1,6 +1,6 @@
-var log = require("./index");
-
-
+let bl = require("../dist");
+bl.init("beautiful-log-test", "ipc");
+let log = bl.make("logger");
 
 ////////// Basic Logging //////////
 
@@ -17,13 +17,13 @@ log.log("<magenta>Color tags are also supported <black>(even nested)</black> in 
 log.log("<#af00af>This color is purple af</#af00af>");
 // You can also pass any hex color, which gets approximated for your terminal.
 
-log.addColor("veljean", "#024601");
+// log.addColor("veljean", "#024601");
 // You can also name your own colors...
 
 log.log("<veljean>Your time is up and your parole's begun</veljean>")
 // ...and use them just like the prenamed ones.
 
-log.addColor("gray", "#333333");
+// log.addColor("gray", "#333333");
 // You can even overwrite the default ones if you don't like them.
 
 log.log({ objects: "can be logged as well, and are colorful", colorful: true });
@@ -35,22 +35,22 @@ log.log({ objects: "can be logged as well, and are colorful", colorful: true });
 
 ////////// Formatting and Saved Formats //////////
 
-log.logf("You can %s", "use format strings, too.");
+// log.logf("You can %s", "use format strings, too.");
 // Formatting is powered by sprintf-js, so anything that's valid there is valid here.
 
-log.addFormat("date", "%s %2d, %4d");
-log.logf("date", "October", 23, 2077);
-log.logf("date", "January", 1, 2000);
+// log.addFormat("date", "%s %2d, %4d");
+// log.logf("date", "October", 23, 2077);
+// log.logf("date", "January", 1, 2000);
 // You can also store a format string so you don't have to pass it many times.
 
 
 
 ////////// Other features //////////
 
-log.divider("DIVIDE");
+// log.divider("DIVIDE");
 // Prints a divider that looks like "###### DIVIDE ######", expanding to fill the full console width.
 
-log.divider("-D-I-V-I-D-E-", "-");
+// log.divider("-D-I-V-I-D-E-", "-");
 // You can also pass a different divider character.
 
 log.timestamp();

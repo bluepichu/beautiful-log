@@ -1,5 +1,6 @@
 {
 	"compilerOptions": {
+		"outDir": "bin",
 		"emitDecoratorMetadata": true,
 		"experimentalDecorators": true,
 		"target": "es6",
@@ -9,5 +10,6 @@
 		"noImplicitAny": true,
 		"declaration": false
 	},
+	"include": [ "src/client", "src/types" ],
 	"compileOnSave": false
 }

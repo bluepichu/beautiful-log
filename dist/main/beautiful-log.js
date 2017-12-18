@@ -1,27 +1,66 @@
 "use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
 const ansy = require("ansy");
+const ipc = require("node-ipc");
 const stack = require("callsite");
 const util = require("util");
 const moment = require("moment");
-let colorIndex = 0;
-const COLORS = ["red", "green", "yellow", "blue", "magenta", "cyan", "white", "gray", "black"];
-function makeLogger(namespace, options) {
-    let log = new Logger(namespace, options);
+const output_1 = require("../common/output");
+let started = false;
+let broadcast = undefined;
+let loggers = [];
+var Mode;
+(function (Mode) {
+    Mode["DISABLED"] = "disabled";
+    Mode["CONSOLE"] = "console";
+    Mode["IPC"] = "ipc";
+})(Mode = exports.Mode || (exports.Mode = {}));
+function init(appName, mode) {
+    if (started) {
+        throw new Error("Can't init the logger more than once.");
+    }
+    started = true;
+    switch (mode) {
+        case Mode.IPC:
+            ipc.config.silent = true;
+            ipc.connectTo(appName);
+            broadcast = (event, data) => ipc.of[appName].emit(event, data);
+            break;
+        case Mode.CONSOLE:
+            let { create, message } = output_1.make();
+            broadcast = (event, data) => {
+                switch (event) {
+                    case "create":
+                        create(data);
+                        break;
+                    case "message":
+                        message(data);
+                        break;
+                }
+            };
+            break;
+        case Mode.DISABLED:
+            broadcast = (event, data) => undefined;
+            break;
+        default:
+            throw new Error(`Unknown broadcast mode ${mode}`);
+    }
+}
+exports.init = init;
+function make(loggerName) {
+    if (!started) {
+        throw new Error("Can't make a logger until init() is called.");
+    }
+    let log = new Logger(loggerName);
+    loggers.push(log);
     log.announce();
     return log;
 }
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.default = makeLogger;
+exports.make = make;
 class Logger {
-    constructor(namespace, options) {
-        if (process.env["SILENT"]) {
-            this.silent = true;
-        }
-        else {
-            this.silent = false;
-        }
-        this.namespace = namespace;
-        options = Object.assign({ showDelta: true }, options);
+    constructor(name) {
+        this.silent = true;
+        this.name = name;
         this.colormap = new Map();
         this.colormap.set("black", (x) => "\x1b[30m" + x + "\x1b[39m");
         this.colormap.set("red", (x) => "\x1b[31m" + x + "\x1b[39m");
@@ -34,24 +73,11 @@ class Logger {
         this.colormap.set("gray", (x) => "\x1b[30m" + x + "\x1b[39m");
         this.colormap.set("default", (x) => "\x1b[39m" + x + "\x1b[39m");
         this.colormap.set("bold", (x) => "\x1b[1m" + x + "\x1b[0m");
-        if (options.color) {
-            this.color = this.colormap.get(options.color);
-        }
-        else {
-            this.color = this.colormap.get(COLORS[colorIndex++]);
-        }
-        if (options.showDelta) {
-            this.showDelta = true;
-        }
-        else {
-            this.showDelta = false;
-        }
-        if (options.showCallsite) {
-            this.showCallsite = true;
-        }
-        else {
-            this.showCallsite = false;
-        }
+        this.colormap.set("info", this.colormap.get("blue"));
+        this.colormap.set("warn", this.colormap.get("yellow"));
+        this.colormap.set("error", this.colormap.get("red"));
+        this.colormap.set("ok", this.colormap.get("green"));
+        this.colormap.set("verbose", this.colormap.get("gray"));
         this.indentLevel = 0;
         return new Proxy((...args) => this.log(...args), {
             get: (_, prop) => {
@@ -64,67 +90,73 @@ class Logger {
         });
     }
     announce() {
+        broadcast("create", { logger: this.name });
+    }
+    transform(args, fn = (x) => x) {
+        let indentStr = new Array(4 * this.indentLevel + 1).join(" ");
+        return this.colorize(args.map(this.inspect).join(" "))
+            .split("\n")
+            .map(fn)
+            .map((s) => indentStr + s)
+            .join("\n");
+    }
+    send(message) {
         if (this.silent) {
             return;
         }
-        process.stdout.write(this.colormap.get("bold")(this.color(`\u25cf ${this.namespace}\n`)));
+        let time = Date.now();
+        let data = {
+            logger: this.name,
+            message,
+            delta: this.showDelta && this.lastTime !== undefined ? time - this.lastTime : undefined
+        };
+        if (this.showCallsite) {
+            let st = stack();
+            let index = 1;
+            while (st[index].getFileName().split("/").pop() === "beautiful-log.js") {
+                index++;
+            }
+            let caller = st[index];
+            data.callsite = `${caller.getFileName().split("/").pop()}:${caller.getLineNumber()}`;
+        }
+        broadcast("message", data);
+        this.lastTime = time;
     }
     log(...args) {
         if (this.silent) {
             return;
         }
-        let lines = this.colorize(args.map(inspect).join(" ")).split("\n");
-        if (this.showCallsite) {
-            let caller = stack()[2];
-            lines[0] = this.color(`[${caller.getFileName().split("/").pop()}:${caller.getLineNumber()}] `) + lines[0];
-        }
-        if (this.showDelta && this.lastTime !== undefined) {
-            lines[0] = this.color(`+${Date.now() - this.lastTime}ms `) + lines[0];
-        }
-        this.lastTime = Date.now();
-        for (let i = 0; i < lines.length; i++) {
-            if (i == 0) {
-                process.stdout.write(this.color("\u25cf "));
-            }
-            else {
-                process.stdout.write(this.color("| "));
-            }
-            for (let i = 0; i < this.indentLevel; i++) {
-                process.stdout.write("    ");
-            }
-            process.stdout.write(lines[i]);
-            process.stdout.write("\n");
-        }
+        this.send(this.transform(args));
     }
     info(...args) {
         if (this.silent) {
             return;
         }
-        this.log(args.map(inspect).join(" ").split("\n").map(this.colormap.get("blue")).join("\n"));
+        this.send(this.transform(args, this.colormap.get("info")));
     }
     warn(...args) {
         if (this.silent) {
             return;
         }
-        this.log(args.map(inspect).join(" ").split("\n").map(this.colormap.get("yellow")).join("\n"));
+        this.send(this.transform(args, this.colormap.get("warn")));
     }
     error(...args) {
         if (this.silent) {
             return;
         }
-        this.log(args.map(inspect).join(" ").split("\n").map(this.colormap.get("red")).join("\n"));
+        this.send(this.transform(args, this.colormap.get("error")));
     }
     ok(...args) {
         if (this.silent) {
             return;
         }
-        this.log(args.map(inspect).join(" ").split("\n").map(this.colormap.get("green")).join("\n"));
+        this.send(this.transform(args, this.colormap.get("ok")));
     }
     verbose(...args) {
         if (this.silent) {
             return;
         }
-        this.log(args.map(inspect).join(" ").split("\n").map(this.colormap.get("gray")).join("\n"));
+        this.send(this.transform(args, this.colormap.get("verbose")));
     }
     line(amount) {
         if (this.silent) {
@@ -134,26 +166,6 @@ class Logger {
         for (let i = 0; i < amount; i++) {
             this.log();
         }
-    }
-    divider(text, divider) {
-        if (this.silent) {
-            return;
-        }
-        this.line(2);
-        if (divider === undefined) {
-            divider = "#";
-        }
-        let outputBuffer = process.stdout;
-        text = " " + text + " ";
-        let len = outputBuffer.getWindowSize()[0] - 2;
-        while (text.length + 2 * divider.length <= len) {
-            text = divider + text + divider;
-        }
-        while (text.length + divider.length <= len) {
-            text = text + divider;
-        }
-        process.stdout.write(this.color("\u25cf ") + text + "\n");
-        this.line();
     }
     timestamp() {
         if (this.silent) {
@@ -228,16 +240,16 @@ class Logger {
         }
         return result;
     }
+    inspect(arg) {
+        if (typeof arg === "object") {
+            return util.inspect(arg, { colors: true });
+        }
+        else if (arg === undefined) {
+            return "undefined";
+        }
+        else {
+            return arg;
+        }
+    }
 }
 exports.Logger = Logger;
-function inspect(arg) {
-    if (typeof arg === "object") {
-        return util.inspect(arg, { colors: true });
-    }
-    else if (arg === undefined) {
-        return "undefined";
-    }
-    else {
-        return arg;
-    }
-}

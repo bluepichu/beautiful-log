@@ -2,7 +2,7 @@
   "name": "beautiful-log",
   "version": "1.3.0",
   "description": "Because logging should be beautiful.",
-  "main": "index.js",
+  "main": "dist/beautiful-log.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
@@ -12,6 +12,7 @@
     "ansy": "^1.0.1",
     "callsite": "^1.0.0",
     "moment": "^2.13.0",
+    "node-ipc": "^9.0.1",
     "sprintf-js": "^1.0.3"
   },
   "typings": "dist/beautiful-log.d.ts",
@@ -24,6 +25,10 @@
   },
   "devDependencies": {
     "@types/callsite": "^1.0.30",
-    "@types/node": "^7.0.5"
+    "@types/node": "^7.0.5",
+    "@types/node-ipc": "^9.0.0"
+  },
+  "bin": {
+    "beautiful-log": "./bin/client.js"
   }
 }

@@ -1,9 +1,12 @@
 "use strict";
 
-const bl = require("./index");
+const bl = require("../dist");
+bl.init("bl-test", "console");
 
-const log = bl("beautiful-log:test");
-const log2 = bl("beautiful-log:test2", { color: "cyan" });
+const log = bl.make("log1");
+log.silent = false;
+const log2 = bl.make("log2");
+log2.silent = false;
 
 let data = {
 	"bulbasaur": {
@@ -36,6 +39,8 @@ let data = {
 	}
 };
 
+log.divider = () => undefined;
+
 try {
 	log.divider("TESTING GENERAL FUNCTIONALITY");
 	log("log (default)");
@@ -46,7 +51,7 @@ try {
 	log.ok("ok (green)");
 	log(data);
 	log(undefined, null, [], "", false);
-	log2("This message should have a cyan dot next to it.");
+	log2("This message should have a different dot next to it.");
 	log.divider("TESTING COLOR TAGS");
 	log("<gray><blue>beautiful-log</blue> can be used to higlight important <magenta>keywords</magenta> that may be relevant to <red>errors</red>.</gray>");
 	log("<#0044ff>What a lovely blue</#0044ff>");
@@ -74,8 +79,8 @@ try {
 	log.timestamp();
 	log.divider("ALTERNATE DIVIDER CHARACTER", "-");
 } catch (e) {
-	log.error("FAILED - LogError thrown.");
-	log.error(e);
+	console.error("FAILED - LogError thrown.");
+	console.error(e);
 }
 log.divider("TESTING ERROR CONDITIONS");
 log.info("All of the following should print a test number and description, a green OK, and a description of what error was raised.");
@@ -102,4 +107,5 @@ setTimeout(() => {
 	log("Delta should be about 1000ms.");
 	log.showDelta = false;
 	log.divider("TESTING IS COMPLETE", "~");
+	process.exit(0); // Needed for the time being
 }, 1000);
