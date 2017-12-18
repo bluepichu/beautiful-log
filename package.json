@@ -1,8 +1,8 @@
 {
   "name": "beautiful-log",
-  "version": "2.0.0-1",
+  "version": "2.0.0-2",
   "description": "Because logging should be beautiful.",
-  "main": "dist/beautiful-log.js",
+  "main": "dist/index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
