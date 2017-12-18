@@ -1,9 +1,4 @@
-export declare enum Mode {
-    DISABLED = "disabled",
-    CONSOLE = "console",
-    IPC = "ipc",
-}
-export declare function init(appName: string, mode: Mode): void;
+export declare function init(appName: string, mode: "disabled" | "console" | "ipc"): void;
 export declare function make(loggerName: string): CallableLogger;
 export interface CallableLogger extends Logger {
     (...args: any[]): void;

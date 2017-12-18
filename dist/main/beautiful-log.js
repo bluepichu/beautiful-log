@@ -9,24 +9,18 @@ const output_1 = require("../common/output");
 let started = false;
 let broadcast = undefined;
 let loggers = [];
-var Mode;
-(function (Mode) {
-    Mode["DISABLED"] = "disabled";
-    Mode["CONSOLE"] = "console";
-    Mode["IPC"] = "ipc";
-})(Mode = exports.Mode || (exports.Mode = {}));
 function init(appName, mode) {
     if (started) {
         throw new Error("Can't init the logger more than once.");
     }
     started = true;
     switch (mode) {
-        case Mode.IPC:
+        case "ipc":
             ipc.config.silent = true;
             ipc.connectTo(appName);
             broadcast = (event, data) => ipc.of[appName].emit(event, data);
             break;
-        case Mode.CONSOLE:
+        case "console":
             let { create, message } = output_1.make();
             broadcast = (event, data) => {
                 switch (event) {
@@ -39,7 +33,7 @@ function init(appName, mode) {
                 }
             };
             break;
-        case Mode.DISABLED:
+        case "disabled":
             broadcast = (event, data) => undefined;
             break;
         default:
@@ -59,7 +53,7 @@ function make(loggerName) {
 exports.make = make;
 class Logger {
     constructor(name) {
-        this.silent = true;
+        this.silent = false;
         this.name = name;
         this.colormap = new Map();
         this.colormap.set("black", (x) => "\x1b[30m" + x + "\x1b[39m");

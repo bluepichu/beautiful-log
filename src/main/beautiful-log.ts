@@ -11,13 +11,7 @@ let started = false;
 let broadcast: (event: string, data: any) => void = undefined;
 let loggers: Logger[] = [];
 
-export enum Mode {
-	DISABLED = "disabled",
-	CONSOLE = "console",
-	IPC = "ipc"
-}
-
-export function init(appName: string, mode: Mode) {
+export function init(appName: string, mode: "disabled" | "console" | "ipc") {
 	if (started) {
 		throw new Error("Can't init the logger more than once.");
 	}
@@ -25,13 +19,13 @@ export function init(appName: string, mode: Mode) {
 	started = true;
 
 	switch (mode) {
-		case Mode.IPC:
+		case "ipc":
 			ipc.config.silent = true;
 			ipc.connectTo(appName);
 			broadcast = (event, data) => ipc.of[appName].emit(event, data);
 			break;
 
-		case Mode.CONSOLE:
+		case "console":
 			let { create, message } = makeOutput();
 			broadcast = (event, data) => {
 				switch (event) {
@@ -41,7 +35,7 @@ export function init(appName: string, mode: Mode) {
 			}
 			break;
 
-		case Mode.DISABLED:
+		case "disabled":
 			broadcast = (event, data) => undefined; // noop
 			break;
 
@@ -75,7 +69,7 @@ export class Logger {
 	public indentLevel: number;
 
 	public constructor(name: string) {
-		this.silent = true;
+		this.silent = false;
 		this.name = name;
 
 		this.colormap = new Map();
