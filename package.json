@@ -15,7 +15,7 @@
     "node-ipc": "^9.0.1",
     "sprintf-js": "^1.0.3"
   },
-  "typings": "dist/beautiful-log.d.ts",
+  "typings": "dist/main/beautiful-log.d.ts",
   "bugs": {
     "url": "https://github.com/bluepichu/beautiful-log/issues"
   },
