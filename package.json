@@ -1,6 +1,6 @@
 {
   "name": "beautiful-log",
-  "version": "3.0.0-0",
+  "version": "2.0.0-1",
   "description": "Because logging should be beautiful.",
   "main": "dist/beautiful-log.js",
   "scripts": {
