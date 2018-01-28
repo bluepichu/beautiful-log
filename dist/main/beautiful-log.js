@@ -7,7 +7,7 @@ const util = require("util");
 const moment = require("moment");
 const output_1 = require("../common/output");
 let started = false;
-let broadcast = undefined;
+let broadcast = (event, data) => undefined;
 let loggers = [];
 function init(appName, mode) {
     if (started) {
@@ -39,15 +39,14 @@ function init(appName, mode) {
         default:
             throw new Error(`Unknown broadcast mode ${mode}`);
     }
+    for (let logger of loggers) {
+        logger.announce();
+    }
 }
 exports.init = init;
 function make(loggerName) {
-    if (!started) {
-        throw new Error("Can't make a logger until init() is called.");
-    }
     let log = new Logger(loggerName);
     loggers.push(log);
-    log.announce();
     return log;
 }
 exports.make = make;
