@@ -8,7 +8,7 @@ import * as moment            from "moment";
 import { make as makeOutput } from "../common/output";
 
 let started = false;
-let broadcast: (event: string, data: any) => void = undefined;
+let broadcast: (event: string, data: any) => void = (event, data) => undefined;
 let loggers: Logger[] = [];
 
 export function init(appName: string, mode: "disabled" | "console" | "ipc") {
@@ -32,7 +32,7 @@ export function init(appName: string, mode: "disabled" | "console" | "ipc") {
 					case "create": create(data); break;
 					case "message": message(data); break;
 				}
-			}
+			};
 			break;
 
 		case "disabled":
@@ -42,16 +42,15 @@ export function init(appName: string, mode: "disabled" | "console" | "ipc") {
 		default:
 			throw new Error(`Unknown broadcast mode ${mode}`);
 	}
+
+	for (let logger of loggers) {
+		logger.announce();
+	}
 }
 
 export function make(loggerName: string): CallableLogger {
-	if (!started) {
-		throw new Error("Can't make a logger until init() is called.");
-	}
-
 	let log = new Logger(loggerName) as CallableLogger;
 	loggers.push(log);
-	log.announce();
 	return log;
 }
 
