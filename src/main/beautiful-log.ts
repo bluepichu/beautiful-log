@@ -51,6 +51,11 @@ export function init(appName: string, mode: "disabled" | "console" | "ipc") {
 export function make(loggerName: string): CallableLogger {
 	let log = new Logger(loggerName) as CallableLogger;
 	loggers.push(log);
+
+	if (started) {
+		log.announce();
+	}
+
 	return log;
 }
 

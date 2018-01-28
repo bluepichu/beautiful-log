@@ -47,6 +47,9 @@ exports.init = init;
 function make(loggerName) {
     let log = new Logger(loggerName);
     loggers.push(log);
+    if (started) {
+        log.announce();
+    }
     return log;
 }
 exports.make = make;
