@@ -1,6 +1,6 @@
 {
   "name": "beautiful-log",
-  "version": "2.0.0-6",
+  "version": "2.0.0-7",
   "description": "Because logging should be beautiful.",
   "main": "dist/index.js",
   "scripts": {
@@ -12,7 +12,6 @@
     "ansy": "^1.0.1",
     "callsite": "^1.0.0",
     "moment": "^2.13.0",
-    "node-ipc": "^9.0.1",
     "sprintf-js": "^1.0.3"
   },
   "typings": "dist/main/beautiful-log.d.ts",
@@ -25,8 +24,7 @@
   },
   "devDependencies": {
     "@types/callsite": "^1.0.30",
-    "@types/node": "^7.0.5",
-    "@types/node-ipc": "^9.0.0"
+    "@types/node": "^7.0.5"
   },
   "bin": {
     "beautiful-log": "./bin/client.js"

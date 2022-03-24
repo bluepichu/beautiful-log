@@ -1,5 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.make = void 0;
 const COLORS = [
     "\x1b[34m",
     "\x1b[31m",

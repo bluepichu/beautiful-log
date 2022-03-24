@@ -1,7 +1,5 @@
 "use strict";
 
-import * as ipc from "node-ipc";
-
 const COLORS = [
 	"\x1b[34m", // blue
 	"\x1b[31m", // red

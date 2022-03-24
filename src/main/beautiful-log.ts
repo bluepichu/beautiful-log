@@ -1,7 +1,6 @@
 "use strict";
 
 import * as ansy              from "ansy";
-import * as ipc               from "node-ipc";
 import * as stack             from "callsite";
 import * as util              from "util";
 import * as moment            from "moment";
@@ -20,10 +19,7 @@ export function init(appName: string, mode: "disabled" | "console" | "ipc") {
 
 	switch (mode) {
 		case "ipc":
-			ipc.config.silent = true;
-			ipc.connectTo(appName);
-			broadcast = (event, data) => ipc.of[appName].emit(event, data);
-			break;
+			throw new Error("No longer supported");
 
 		case "console":
 			let { create, message } = makeOutput();

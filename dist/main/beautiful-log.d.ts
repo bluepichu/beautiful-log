@@ -13,8 +13,8 @@ export declare class Logger {
     indentLevel: number;
     constructor(name: string);
     announce(): void;
-    private transform(args, fn?);
-    private send(message);
+    private transform;
+    private send;
     log(...args: any[]): void;
     info(...args: any[]): void;
     warn(...args: any[]): void;
@@ -26,7 +26,7 @@ export declare class Logger {
     indent(amount?: number): void;
     unindent(amount?: number): void;
     setColor(name: string, color: string): void;
-    private getColorFn(name);
-    private colorize(str);
-    private inspect(arg);
+    private getColorFn;
+    private colorize;
+    private inspect;
 }

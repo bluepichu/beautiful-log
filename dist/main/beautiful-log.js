@@ -1,7 +1,7 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.Logger = exports.make = exports.init = void 0;
 const ansy = require("ansy");
-const ipc = require("node-ipc");
 const stack = require("callsite");
 const util = require("util");
 const moment = require("moment");
@@ -16,10 +16,7 @@ function init(appName, mode) {
     started = true;
     switch (mode) {
         case "ipc":
-            ipc.config.silent = true;
-            ipc.connectTo(appName);
-            broadcast = (event, data) => ipc.of[appName].emit(event, data);
-            break;
+            throw new Error("No longer supported");
         case "console":
             let { create, message } = output_1.make();
             broadcast = (event, data) => {
